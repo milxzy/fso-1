@@ -1,9 +1,33 @@
 import { useState } from 'react'
 
-const Button = ({ onClick }) => {
+const Button = ({ onClick, text }) => {
   
   return (
-    <button onClick={onClick}>next anecdote</button>
+    <>
+    
+    <button onClick={onClick}>{text}</button>
+    </>
+  
+  )
+}
+
+const VoteStats = ({ numberOfVotes, selected }) => {
+  const voteTotal = numberOfVotes[selected] || 0;
+  return (
+    <p>has {  voteTotal  } votes</p>
+  )
+}
+
+const MostVotes = ({ votes, mostVotes, anecdotes }) => {
+
+
+  return (
+    <>
+      <h2>Anecdote with most votes</h2>
+      {anecdotes[mostVotes]}
+      {votes[mostVotes]}
+
+    </>
   )
 }
 
@@ -20,15 +44,55 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState({ 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 })
+  const [mostVotes, setMostVotes] = useState(0)
 
-  const getRandomNumber = () => {
-        setSelected(Math.floor(Math.random() * 8))
+  const findMostVotes = () => {
+    let highestAnecdote = 0;
+    let highestVotes = 0
+    // go to votes [0]
+    // loop through object 
+    // if current num > than prev num, set highest votes to that num
+   const votesArray = (Object.entries(votes))
+    for (let i = 0 ; i < votesArray.length -1; i++) {
+      let vote = votesArray[i]
+      // set highestValue to votesArray[i]
+      //if vote[1] > highestVotes, set highest anecdote to vote[0]
+      if( vote[1] > highestVotes){
+        highestAnecdote = vote[0]
+      }
+    }
+    setMostVotes(highestAnecdote)
   }
+
+  
+
+
+const handleClick = (opp) => {
+  if (opp === 'randomNumber') {
+     setSelected(Math.floor(Math.random() * 8))
+       
+  } else if( opp === 'vote') { 
+    const copy = { ...votes }
+    copy[selected] += 1;
+    setVotes(copy)
+    
+
+  }
+  findMostVotes()
+}
+
+
+
 
   return (
     <div>
       {anecdotes[selected]}
-      <Button onClick={getRandomNumber} />
+      <Button onClick={() => handleClick('randomNumber')}  text={'next anecdote'} />
+      <Button onClick={() => handleClick('vote')} text="vote" /> 
+      <VoteStats numberOfVotes={votes} selected={selected}/>
+      <MostVotes votes={votes} mostVotes={mostVotes} anecdotes={anecdotes} />
+      
     </div>
   )
 }
